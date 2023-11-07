@@ -12,20 +12,17 @@ int main()
 
     int i, j, pid;
 
-    sem_t **semArr;
-    // sem_t * sem;
-    // int shmidArr[NUM_PROCESSES];
+    sem_t *semArr;
 
     int shmid = shmget(IPC_PRIVATE, sizeof(sem_t) * NUM_PROCESSES, IPC_CREAT | 0600);
-    semArr = (sem_t **)shmat(shmid, NULL, 0);
+    semArr = (sem_t *)shmat(shmid, NULL, 0);
 
     for (int k = 0; k < NUM_PROCESSES; k++)
     {
-        // semArr[k] = (sem_t *)shmat(shmidArr[k], NULL, 0);
-        sem_init(semArr[k], 1, 0);
+        sem_init(&semArr[k], 1, 0);
     }
 
-    sem_post(semArr[0]);
+    sem_post(&semArr[0]);
 
     for (i = 0; i < NUM_PROCESSES; i++)
     {
@@ -37,7 +34,7 @@ int main()
 
     if (pid == 0)
     {
-        sem_wait(semArr[i]);
+        sem_wait(&semArr[i]);
 
         printf("I am child %d\n", i);
 
@@ -52,18 +49,12 @@ int main()
 
         if (i < (NUM_PROCESSES - 1))
         {
-            sem_post(semArr[i + 1]);
+            sem_post(&semArr[i + 1]);
         }
     }
     else
     {
         for (i = 0; i < NUM_PROCESSES; i++)
             wait(NULL);
-
-        // for (int k = 0; k < NUM_PROCESSES; k++)
-        // {
-        //     sem_destroy(semArr[k]);
-        //     shmctl(shmidArr[k], IPC_RMID, 0);
-        // }
     }
 }
