@@ -14,7 +14,8 @@ void dbprintf(char *format, ...);
 
 typedef struct td
 {
-    int val;
+    int length;
+    int isAllocated;
 } TData;
 
 /* -----------------------------------------
